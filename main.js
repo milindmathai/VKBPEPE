@@ -13,7 +13,7 @@ const { combine, timestamp, printf, colorize, align,json } = winston.format;
 const client = platformClient.ApiClient.instance;
 let apiInstance = new platformClient.ConversationsApi();
 
-
+console.log(process.env.clientId)
 const clientId = process.env.clientId; //'1ab47961-e61c-43f0-aa4e-0cebbff924f6'; 
 const clientSecret = process.env.clientSecret; //'e9Bl3yA2zT3zUpkkdsRVGCoKhzksDhGC3W1Gg8LVzYg';
 
@@ -91,7 +91,6 @@ const getData = async (timestamp, interval) => {
         }
         //Authenticating using the client ID and client Secret
         await client.loginClientCredentialsGrant(clientId, clientSecret)
-
         //Making the API call
         let data = await apiInstance.postAnalyticsConversationsDetailsQuery(body)
 
@@ -101,7 +100,6 @@ const getData = async (timestamp, interval) => {
         //Checking how many times the loop should run and incrementing the counter.
         loopsToDo = Math.ceil(totalHits / 100)
         counter++
-
         //Extracting the data from the JSON
         data = data["conversations"]
         try {
@@ -219,7 +217,7 @@ const getData = async (timestamp, interval) => {
                         }
 
                     } catch (error) {
-                        logger.warning("Failed with ACD present: the conversation id is " + conversation["conversationId"] + " and the direction is " + conversation["originatingDirection"]);
+                        logger.warn("Failed with ACD present: the conversation id is " + conversation["conversationId"] + " and the direction is " + conversation["originatingDirection"]);
                         conversation["participants"].forEach(participants => {
                             failedWithAcdPresent++
                         })
@@ -227,20 +225,18 @@ const getData = async (timestamp, interval) => {
                 }
                 else {
                     logger.warn("No acd data for conversation id " + conversation["conversationId"] + " and the direction is " + conversation["originatingDirection"]);
-
                     noAcd++
                 }
             })
         }
         catch (error) {
-            //console.log(data)
-            logger.warning('No Conversation occured in this frame');
-
+            console.log(error)
+            logger.warn('No Conversation occured in this frame');
 
             failedToGetConversation++
         }
-
     }
+    console.log("running here")
     logger.info("noQueueName: " + String(noQueueName));
     logger.info("failedWithAcdPresent: " + String(failedWithAcdPresent));
     logger.info("noAcd: " + String(noAcd));
@@ -261,23 +257,18 @@ const getData = async (timestamp, interval) => {
     return true
 }
 
-const s3 = new AWS.S3({
-    accessKeyId: process.env.AWS_ACCESS_KEY,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-});
-// // ---------- For a single run uncomment these lines. ------------    
-// let dateObj = new Date()
-// let DATE_TIME_KEY = Date.now()
-// let interval = String(dateObj.getUTCFullYear()) + String(dateObj.getMonth() + 1) + String(dateObj.getDate()) + String(dateObj.getHours()) + String(dateObj.getMinutes()) + String(dateObj.getSeconds())
-// logger.info("Running script at");
-// logger.warn('Warning message');
-// getData(interval, DATE_TIME_KEY).then((result) => {
-//     // console.log("")
-// }).catch((e) => {
-//     //console.log(e)
-// })
+// // ---------- For a single run uncomment these lines. ------------
+let dateObj = new Date()
+let DATE_TIME_KEY = Date.now()
+let interval = String(dateObj.getUTCFullYear()) + String(dateObj.getMonth() + 1) + String(dateObj.getDate()) + String(dateObj.getHours()) + String(dateObj.getMinutes()) + String(dateObj.getSeconds())
+logger.info("Running script at");
+getData(interval, DATE_TIME_KEY).then((result) => {
+    // console.log("")
+}).catch((e) => {
+    //console.log(e)
+})
 
-// logger.info("Script Executed");        
+logger.info("Script Executed");
 
 
 // cron.schedule('0 0 0 * * *', () => {
