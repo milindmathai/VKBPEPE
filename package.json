@@ -1,0 +1,22 @@
+{
+  "name": "vkb_middleware",
+  "version": "1.0.0",
+  "description": "Fetching queue data from GC and storing it in a csv compatible with PEPE",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Infinit.cx",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1330.0",
+    "aws-sdk-js-codemod": "^0.14.1",
+    "csv-append": "^1.0.0",
+    "csv-stringify": "^6.2.1",
+    "date-and-time": "^2.4.1",
+    "json-2-csv": "^3.17.2",
+    "node-cron": "^3.0.2",
+    "purecloud-platform-client-v2": "^150.0.0",
+    "winston": "^3.8.2"
+  }
+}
