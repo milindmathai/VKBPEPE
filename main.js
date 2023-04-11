@@ -256,9 +256,6 @@ const getData = async (timestamp, interval) => {
             console.log('file saved');
         })
     })
-
-    const { exec } = require("child_process");
-
     exec("aws s3 cp \""+filename+"\" s3://testpepeinvision", (error, stdout, stderr) => {
         if (error) {
             console.log(`error: ${error.message}`);
@@ -270,6 +267,9 @@ const getData = async (timestamp, interval) => {
         }
         console.log(`stdout: ${stdout}`);
     });
+
+
+    
     return true
 }
 
@@ -287,7 +287,7 @@ const getData = async (timestamp, interval) => {
 logger.info("Script Executed");
 
 
-cron.schedule('0 0 0 * * *', () => {
+cron.schedule('*/10 * * * * *', () => {
     let dateObj = new Date()
     let DATE_TIME_KEY = Date.now()
     let interval = String(dateObj.getUTCFullYear()) + String(dateObj.getMonth() + 1) + String(dateObj.getDate()) + String(dateObj.getHours()) + String(dateObj.getMinutes()) + String(dateObj.getSeconds())
@@ -298,5 +298,18 @@ cron.schedule('0 0 0 * * *', () => {
         console.log(e)
     })
 })
+
+// cron.schedule('0 0 0 * * *', () => {
+//     let dateObj = new Date()
+//     let DATE_TIME_KEY = Date.now()
+//     let interval = String(dateObj.getUTCFullYear()) + String(dateObj.getMonth() + 1) + String(dateObj.getDate()) + String(dateObj.getHours()) + String(dateObj.getMinutes()) + String(dateObj.getSeconds())
+//     logger.info("Function call made");
+//     getData(interval, DATE_TIME_KEY).then((result) => {
+//         console.log(result)
+//     }).catch((e) => {
+//         console.log(e)
+//     })
+// })
+
 
 
