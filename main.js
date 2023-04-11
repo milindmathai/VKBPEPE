@@ -6,16 +6,17 @@ const converter = require('json-2-csv');
 const date = require('date-and-time')
 const winston = require('winston');
 const { exec } = require("child_process");
-
-
+const yargs = require('yargs/yargs')
+const { hideBin } = require('yargs/helpers');
+const argv = yargs(hideBin(process.argv)).argv
 const { combine, timestamp, printf, colorize, align, json } = winston.format;
 
 
-
+let s3Name = argv.s3
 const client = platformClient.ApiClient.instance;
 let apiInstance = new platformClient.ConversationsApi();
 
-console.log(process.env.clientId)
+
 const clientId = process.env.clientId; //'1ab47961-e61c-43f0-aa4e-0cebbff924f6'; 
 const clientSecret = process.env.clientSecret; //'e9Bl3yA2zT3zUpkkdsRVGCoKhzksDhGC3W1Gg8LVzYg';
 
@@ -256,7 +257,7 @@ const getData = async (timestamp, interval) => {
             console.log('file saved');
         })
     })
-    exec("aws s3 cp \""+filename+"\" s3://testpepeinvision", (error, stdout, stderr) => {
+    exec("aws s3 cp \""+filename+"\" s3://"+s3Name, (error, stdout, stderr) => {
         if (error) {
             console.log(`error: ${error.message}`);
             return;
@@ -289,15 +290,15 @@ logger.info("Script Executed");
 
 
 cron.schedule('0 0 0 * * *', () => {
-     let dateObj = new Date()
-     let DATE_TIME_KEY = Date.now()
-     let interval = String(dateObj.getUTCFullYear()) + String(dateObj.getMonth() + 1) + String(dateObj.getDate()) + String(dateObj.getHours()) + String(dateObj.getMinutes()) + String(dateObj.getSeconds())
-     logger.info("Function call made");
-     getData(interval, DATE_TIME_KEY).then((result) => {
-         console.log(result)
-     }).catch((e) => {
-         console.log(e)
-     })
+    let dateObj = new Date()
+    let DATE_TIME_KEY = Date.now()
+    let interval = String(dateObj.getUTCFullYear()) + String(dateObj.getMonth() + 1) + String(dateObj.getDate()) + String(dateObj.getHours()) + String(dateObj.getMinutes()) + String(dateObj.getSeconds())
+    logger.info("Function call made");
+    getData(interval, DATE_TIME_KEY).then((result) => {
+        console.log(result)
+    }).catch((e) => {
+        console.log(e)
+    })
 })
 
 
